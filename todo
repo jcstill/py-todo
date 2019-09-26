@@ -42,13 +42,17 @@ items = []
 class TodoItem:
     """ A class definition for each todo item, which is defined with todo -a, and stored in the datafile """
 
-    def __init__(self, title: str, exp_date: datetime):
+    def __init__(self, title: str, exp_date: datetime, exp_time: datetime):
         self.title = title
         self.exp_date = exp_date
+        self.exp_time = exp_time
 
     @property
     def days_left(self):
         return 999 if self.exp_date is None else (self.exp_date - datetime.today()).days + 1
+
+    def tod(self):
+        return "" if self.exp_time is None else " @ {exp_time}".format(exp_time=self.exp_time.strftime('%I:%M%p'))
 
     def __str__(self):
         if self.exp_date is None:
@@ -56,13 +60,14 @@ class TodoItem:
 
         # Set the amount of days left as the timedelta from today to the expiration date, in days.
         days_left = self.days_left
+        time = self.tod()
 
         if days_left == 0:
-            return self.title + " (Today)"  # Annotate as the current day
+            return self.title + " (Today{time})".format(time=time) # Annotate as the current day
         elif days_left == 1:
-            return self.title + " (Tomorrow)"  # Annotate as tomorrow
+            return self.title + " (Tomorrow{time})".format(time=time) # Annotate as tomorrow
         elif days_left == -1:
-            return self.title + " (Yesterday)"  # Annotate as Yesterday
+            return self.title + " (Yesterday{time})".format(time=time) # Annotate as Yesterday
         elif days_left > 1:
             output_str = self.title + " ("
 
@@ -93,9 +98,10 @@ class TodoItem:
                 # weeks_left == 0 iff this week;
                 # weeks_left == 1 iff next week.
                 if weeks_left == 0 or weeks_left == 1:
-                    output_str += "{this_or_next} {weekday}; ".format(
+                    output_str += "{this_or_next} {weekday}{time}; ".format(
                         this_or_next="This" if weeks_left == 0 else "Next",
-                        weekday=self.exp_date.strftime("%A"))
+                        weekday=self.exp_date.strftime("%A"),
+                        time=time)
             return output_str + "{days_left} days left)".format(days_left=days_left)
         elif days_left < -1:
             # For dealing with Past-Due Stuffs
@@ -114,10 +120,10 @@ class TodoItem:
                 weeks_left = ceil((days_left - days_to_prev_week) / 7)
 
                 if weeks_left == 0 or weeks_left == 1:
-                    output_str += "{this_or_next}{weekday}; ".format(
+                    output_str += "{this_or_next}{weekday}{time}; ".format(
                         this_or_next="Last " if weeks_left == 1 else "",
-                        weekday=self.exp_date.strftime("%A"))
-
+                        weekday=self.exp_date.strftime("%A"),
+                        time=time)
             return output_str + "{days_left} days ago)".format(days_left=days_left)
         else:
             return self.title + " ERROR"
@@ -142,9 +148,9 @@ def maybe_color_str(message, color_fstr, predicate=lambda: True):
     return message
 
 
-def add_item(title: str, exp_date: datetime):
+def add_item(title: str, exp_date: datetime, exp_time: datetime):   # Support for times
     """ Adds a TodoItem to the items list """
-    items.append(TodoItem(title, exp_date))
+    items.append(TodoItem(title, exp_date, exp_time))
 
 
 def insert_todo_item(index, todo_item):
@@ -165,7 +171,7 @@ def sort_items():
     """ Sorts TodoItem by their remaining days """
     items.sort(key=lambda i: i.days_left)
 
-def list_items():
+def list_items():   # Support for times
     """ Iterate through each TodoItem in the items list and print it """
     if len(items) > 0:
         print("You have {item_count} item{s} left on the reminder!".format(
@@ -210,8 +216,21 @@ def parse_date_str(exp_date_str):
         print("An error occurred while parsing your date.")
         sys.exit()
 
+def parse_time_str(exp_time_str):   # Support for times
+    """Parses time string and returns datetime object
+    :param exp_time_str: the time string to validate
+    :return: a valid datetime object
+    """
+    try:
+        if exp_time_str == '':
+            return None
+        else:
+            return datetime.strptime(exp_time_str, '%I:%M%p')
+    except:
+        print("An error occurred while parsing your time.")
+        sys.exit()
 
-def take_input(title_pos, date_pos, default_title=None):
+def take_input(title_pos, date_pos, time_pos, default_title=None):  # Support for times
     """Takes a title and date from the user if not present in sys.argv
     :param title_pos: the position of the title in sys.argv
     :param date_pos: the position of the date in sys.argv
@@ -224,8 +243,10 @@ def take_input(title_pos, date_pos, default_title=None):
         title = sys.argv[title_pos] if len(sys.argv) > title_pos else input("Title: ")
 
     exp_date_str = sys.argv[date_pos] if len(sys.argv) > date_pos else input("Expiry date (YYYY/MM/DD or <days>d) (Optional): ")
+    
+    exp_time_str = sys.argv[time_pos] if len(sys.argv) > time_pos else input("Expiry time (HH:MM<am/pm>) (Optional): ")    # Support for times
 
-    return title if title else default_title, exp_date_str
+    return title if title else default_title, exp_date_str, exp_time_str
 
 
 def scrape_keywords(line):
@@ -330,10 +351,13 @@ if __name__ == '__main__':
 
     elif sys.argv[1] in ['-a', '--add']:
         try:
-            title, exp_date_str = take_input(2, 3)
+            title, exp_date_str, exp_time_str = take_input(2, 3, 4) # Support for times
 
             exp_date = parse_date_str(exp_date_str)
-            add_item(title, exp_date)
+            
+            exp_time = parse_time_str(exp_time_str) # Support for times
+            
+            add_item(title, exp_date, exp_time) # Support for times
             list_items()
         except KeyboardInterrupt:
             # If the input is canceled, print a newline for prettiness, list the items and exit
@@ -356,10 +380,11 @@ if __name__ == '__main__':
         if len(sys.argv) >= 3:
             try:
                 item = items[int(sys.argv[2])]
-                title, exp_date_str = take_input(3, 4, default_title=item.title)
+                title, exp_date_str, exp_time_str = take_input(3, 4, 5, default_title=item.title)
 
                 item.title = title
                 item.exp_date = parse_date_str(exp_date_str)
+                item.exp_time = parse_time_str(exp_time_str)
                 list_items()
             except IndexError:
                 print("Item does not exist.")
@@ -415,9 +440,9 @@ if __name__ == '__main__':
                             if ': <' in content[index + 1]:
                                 add_item(title, scrape_date(content[index + 1]))
                             else:
-                                add_item(title, None)
+                                add_item(title, None, None) # Support for times
                         except IndexError:
-                            add_item(title, None)
+                            add_item(title, None, None) # Support for times
         list_items()
 
     elif sys.argv[1] in ['-v', '--version']:
