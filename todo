@@ -52,7 +52,9 @@ class TodoItem:
         return 999 if self.exp_date is None else (self.exp_date - datetime.today()).days + 1
 
     def tod(self):
-        return "" if self.exp_time is None else " @ {exp_time}".format(exp_time=self.exp_time.strftime('%I:%M%p'))
+        if config['PY-TODO'].getboolean('time', fallback=False):
+            return "" if self.exp_time is None else " @ {exp_time}".format(exp_time=self.exp_time.strftime('%I:%M%p'))
+        return ""
 
     def __str__(self):
         if self.exp_date is None:
@@ -324,7 +326,8 @@ if __name__ == '__main__':
     config['PY-TODO'] = {
         'color': False,
         'detail_mode': False,
-        'week_start_day': 'Sun'
+        'week_start_day': 'Sun',
+        'time': False
     }
 
     if not os.path.isfile(os.path.join(config_location, config_name)):
