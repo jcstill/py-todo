@@ -235,7 +235,8 @@ def list_items():
                 date = maybe_color_str(date, due_color, lambda: True if "DUE" in date else False)
                 date = maybe_color_str(date, date_color, lambda: True if "DUE" not in date else False)
                 date = maybe_color_str(date, today_color, lambda: True if "Today" in date else False)
-                date = maybe_color_str(date, due_color, lambda: True if "ago" in date else False) # Support for Past-Due Stuffs
+                date = maybe_color_str(date, due_color, lambda: True if "ago" in date else False)
+                date = maybe_color_str(date, due_color, lambda: True if "Yesterday" in date else False)
 
                 print(maybe_colored_index + item.title + " " + date)
 
@@ -262,7 +263,7 @@ def parse_date_str(exp_date_str):
         print("An error occurred while parsing your date.")
         sys.exit()
 
-def parse_time_str(exp_time_str):   # Support for times
+def parse_time_str(exp_time_str):
     """Parses time string and returns datetime object
     :param exp_time_str: the time string to validate
     :return: a valid datetime object
@@ -331,20 +332,22 @@ def scrape_date(line):
 
 def usage():
     return "\nUsage: " + sys.argv[0] + " <argument>\n" \
-          "-a --add                                  -- Add a new item.\n" \
-          "-a --add <title> <date or days>           -- Add a new item with a title and expiry date provided.\n" \
-          "-c --complete <index>                     -- Mark task as completed and keep them in the list.\n" \
-          "-e --edit <index>                         -- Edit an item.\n" \
-          "-e --edit <index> <title> <date or days>  -- Edit an item with a title and expiry date provided.\n" \
-          "-i --incomplete <index>                   -- Mark task as incomplete. (default)\n" \
-          "-m --move <index> <new index>             -- Move an item from index to new index.\n" \
-          "-r --remove <indices...>                  -- Remove items by their indices.\n" \
-          "-s --sort                                 -- Sort items by their remaining days.\n" \
-          "-l --list                                 -- List all items.\n" \
-          "-org --orgfile <filename>                 -- Add org file TODOs.\n" \
+          "-a --add                         -- Add a new item.\n" \
+          "-e --edit <index>                -- Edit an item.\n" \
+          "-org --orgfile <filename>        -- Add org file TODOs.\n" \
           "\n" \
-          "-h --help                                 -- Display help message.\n" \
-          "-v --version                              -- Display version info.\n" \
+          "-c --complete <index>            -- Mark task as completed and keep them in the list.\n" \
+          "-i --incomplete <index>          -- Mark task as incomplete. (default)\n" \
+          "\n" \
+          "-m --move <index> <new index>    -- Move an item from index to new index.\n" \
+          "-r --remove <indices...>         -- Remove items by their indices.\n" \
+          "-s --sort                        -- Sort items by their remaining days.\n" \
+          "\n" \
+          "-d --detail <index>              -- Show details section of the task\n" \
+          "-l --list                        -- List all items. (Called if no args passed)\n" \
+          "\n" \
+          "-h --help                        -- Display help message.\n" \
+          "-v --version                     -- Display version info.\n" \
           "\n\n" \
           "Configuration Options (See " + config_location + config_name + "):\n" \
           "* color = true / false\n" \
@@ -518,9 +521,9 @@ if __name__ == '__main__':
                             if ': <' in content[index + 1]:
                                 add_item(title, scrape_date(content[index + 1]))
                             else:
-                                add_item(title, None, None) # Support for times
+                                add_item(title, None, None)
                         except IndexError:
-                            add_item(title, None, None) # Support for times
+                            add_item(title, None, None)
         list_items()
 
     elif sys.argv[1] in ['-v', '--version']:
