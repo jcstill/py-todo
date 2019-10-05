@@ -43,11 +43,12 @@ items = []
 class TodoItem:
     """ A class definition for each todo item, which is defined with todo -a, and stored in the datafile """
 
-    def __init__(self, title: str, exp_date: datetime, exp_time: datetime):
+    def __init__(self, title: str, exp_date: datetime, exp_time: datetime, detail: str):
         self.title = title
         self.exp_date = exp_date
         self.exp_time = exp_time
         self.complete = False
+        self.detail = detail
 
     @property
     def days_left(self):
@@ -152,9 +153,9 @@ def maybe_color_str(message, color_fstr, predicate=lambda: True):
     return message
 
 
-def add_item(title: str, exp_date: datetime, exp_time: datetime):   # Support for times
+def add_item(title: str, exp_date: datetime, exp_time: datetime, detail_str: str):
     """ Adds a TodoItem to the items list """
-    items.append(TodoItem(title, exp_date, exp_time))
+    items.append(TodoItem(title, exp_date, exp_time, detail_str))
 
 
 def insert_todo_item(index, todo_item):
@@ -184,7 +185,31 @@ def sort_items():
     """ Sorts TodoItem by their remaining days """
     items.sort(key=lambda i: i.days_left)
 
-def list_items():   # Support for times
+
+def print_detail(index):
+    index = str(index)
+    item_str = str(items[int(index)])
+    if items[int(index)].complete == False:
+        maybe_colored_index = maybe_color_str(index + ") ", index_color)
+    else:
+        maybe_colored_index = maybe_color_str(index + ") ", complete_color)
+    if items[int(index)].complete == True:
+        item_str = maybe_color_str(item_str, complete_color, lambda: True) # Color completed tasks differently
+        print(maybe_colored_index + item_str)
+    elif items[int(index)].complete == False and '(' in item_str:
+        date = item_str[item_str.index('('):]
+        date = maybe_color_str(date, due_color, lambda: True if "DUE" in date else False)
+        date = maybe_color_str(date, date_color, lambda: True if "DUE" not in date else False)
+        date = maybe_color_str(date, today_color, lambda: True if "Today" in date else False)
+        date = maybe_color_str(date, due_color, lambda: True if "ago" in date else False)
+        date = maybe_color_str(date, due_color, lambda: True if "Yesterday" in date else False)
+        print(maybe_colored_index + items[int(index)].title + " " + date)
+    else:
+        print(maybe_colored_index + item_str)
+    print("\t" + items[int(index)].detail)
+
+
+def list_items():
     """ Iterate through each TodoItem in the items list and print it """
     if len(items) > 0:
         print("You have {item_count} item{s} left on the reminder!".format(
@@ -251,7 +276,7 @@ def parse_time_str(exp_time_str):   # Support for times
         print("An error occurred while parsing your time.")
         sys.exit()
 
-def take_input(title_pos, date_pos, time_pos, default_title=None):  # Support for times
+def take_input(title_pos, date_pos, time_pos, detail_pos, default_title=None):
     """Takes a title and date from the user if not present in sys.argv
     :param title_pos: the position of the title in sys.argv
     :param date_pos: the position of the date in sys.argv
@@ -264,10 +289,10 @@ def take_input(title_pos, date_pos, time_pos, default_title=None):  # Support fo
         title = sys.argv[title_pos] if len(sys.argv) > title_pos else input("Title: ")
 
     exp_date_str = sys.argv[date_pos] if len(sys.argv) > date_pos else input("Expiry date (YYYY/MM/DD or <days>d) (Optional): ")
-    
-    exp_time_str = sys.argv[time_pos] if len(sys.argv) > time_pos else input("Expiry time (HH:MM<am/pm>) (Optional): ")    # Support for times
+    exp_time_str = sys.argv[time_pos] if len(sys.argv) > time_pos else input("Expiry time (HH:MM<am/pm>) (Optional): ")
+    detail_str = sys.argv[detail_pos] if len(sys.argv) > detail_pos else input("Task details (Optional): ")
 
-    return title if title else default_title, exp_date_str, exp_time_str
+    return title if title else default_title, exp_date_str, exp_time_str, detail_str
 
 
 def scrape_keywords(line):
@@ -373,6 +398,15 @@ if __name__ == '__main__':
     elif sys.argv[1] in ['-l', '--list']:
         list_items()
 
+    elif sys.argv[1] in ['-d', '--detail']:
+        if len(sys.argv) == 3:
+            try:
+                print_detail(int(sys.argv[2]))
+            except:
+                print("Item does not exist.")
+        else:
+            print(usage())
+
     elif sys.argv[1] in ['-c', '--complete']:
         if len(sys.argv) == 3:
             try:
@@ -395,13 +429,12 @@ if __name__ == '__main__':
 
     elif sys.argv[1] in ['-a', '--add']:
         try:
-            title, exp_date_str, exp_time_str = take_input(2, 3, 4) # Support for times
+            title, exp_date_str, exp_time_str, detail_str = take_input(2, 3, 4, 5)
 
             exp_date = parse_date_str(exp_date_str)
-            
-            exp_time = parse_time_str(exp_time_str) # Support for times
-            
-            add_item(title, exp_date, exp_time) # Support for times
+            exp_time = parse_time_str(exp_time_str)
+
+            add_item(title, exp_date, exp_time, detail_str)
             list_items()
         except KeyboardInterrupt:
             # If the input is canceled, print a newline for prettiness, list the items and exit
@@ -424,11 +457,12 @@ if __name__ == '__main__':
         if len(sys.argv) >= 3:
             try:
                 item = items[int(sys.argv[2])]
-                title, exp_date_str, exp_time_str = take_input(3, 4, 5, default_title=item.title)
+                title, exp_date_str, exp_time_str, detail_str = take_input(3, 4, 5, 6, default_title=item.title)
 
                 item.title = title
                 item.exp_date = parse_date_str(exp_date_str)
                 item.exp_time = parse_time_str(exp_time_str)
+                item.detail = detail_str
                 list_items()
             except IndexError:
                 print("Item does not exist.")
