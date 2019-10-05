@@ -212,8 +212,12 @@ def print_detail(index):
 def list_items():
     """ Iterate through each TodoItem in the items list and print it """
     if len(items) > 0:
+        item_count = len(items)
+        for x in range(0, int(len(items))):
+            if items[x].complete:
+                item_count -= 1
         print("You have {item_count} item{s} left on the reminder!".format(
-            item_count=len(items), s="s" if len(items) >= 2 else ""))
+            item_count=str(item_count), s="s" if len(items) >= 2 else ""))
 
         for index, item in enumerate(items):
             item_str = str(item)
