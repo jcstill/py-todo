@@ -198,7 +198,21 @@ def print_detail(index):
         item_str = maybe_color_str(item_str, complete_color, lambda: True) # Color completed tasks differently
         print(maybe_colored_index + item_str)
     elif items[int(index)].complete == False and '(' in item_str:
-        date = item_str[item_str.index('('):]
+        date = item_str[item_str.index('(')] + items[int(index)].exp_date.strftime('%A, %B %d, %Y')
+        if items[int(index)].exp_time is not None:
+            date += " @ " + items[int(index)].exp_time.strftime('%I:%M%p')
+        date += "; "
+        days_left = items[int(index)].days_left
+        if days_left == 0:
+            date += "Today)"
+        elif days_left == 1:
+            date += "Tomorrow)"
+        elif days_left == -1:
+            date += "Yesterday)"
+        elif days_left > 1:
+            date += str(days_left) + " days left)"
+        elif days_left < -1:
+            date += str(days_left) + " days ago)"
         date = maybe_color_str(date, due_color, lambda: True if "DUE" in date else False)
         date = maybe_color_str(date, date_color, lambda: True if "DUE" not in date else False)
         date = maybe_color_str(date, today_color, lambda: True if "Today" in date else False)
@@ -207,7 +221,8 @@ def print_detail(index):
         print(maybe_colored_index + items[int(index)].title + " " + date)
     else:
         print(maybe_colored_index + item_str)
-    print("\t" + items[int(index)].detail)
+    if(items[int(index)].detail != ""):
+        print("\t" + items[int(index)].detail)
 
 
 def list_items():
