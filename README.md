@@ -1,6 +1,6 @@
 <div align="center">
 <h3>PY-TODO</h3>
-<img src="https://raw.githubusercontent.com/jcstill/py-todo/master/.meta/screenshot.png">
+<img src="https://raw.githubusercontent.com/jcstill/py-todo-ext/master/.meta/screenshot.png">
 
 </div>
 
@@ -17,13 +17,13 @@ This is an extended version of [py-todo](https://github.com/aesophor/py-todo)
 ## Installation
 * Manual Installation (Linux)
 ```
-$ git clone https://github.com/jcstill/py-todo.git
+$ git clone https://github.com/jcstill/py-todo-ext.git
 $ cd py-todo && sudo cp todo /usr/bin/todo
 ```
 
 * Manual Installation (OSX)
 ```
-$ git clone https://github.com/jcstill/py-todo.git
+$ git clone https://github.com/jcstill/py-todo-ext.git
 $ cd py-todo && cp todo /usr/local/bin/
 ```
 
