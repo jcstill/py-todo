@@ -1,62 +1,62 @@
 <div align="center">
 <h3>PY-TODO</h3>
-<img src="https://github.com/aesophor/py-todo/raw/master/.meta/scrot.png">
+<img src="https://raw.githubusercontent.com/jcstill/py-todo/master/.meta/screenshot.png">
 
 </div>
 
 ## Overview
-A little program to remind you of upcoming events / unfinished tasks.
-
-Put them into `~/.zshrc` or `~/.bashrc` or whatever you want, and it will stop you from
-putting off important shit.
-
-Pickled (i.e., serialized) todo list objects are saved in ~/.local/share/py-todo/todo.dat by default.
-
+This is an extended version of [py-todo](https://github.com/aesophor/py-todo)
 
 ## Dependencies
-* python >=3.5 (sys, re, pickle, pathlib, datetime)
+* python >=3.5 (sys, re, pickle, pathlib, datetime, [dateutil](https://dateutil.readthedocs.io/en/stable))
 
 ## Supported Platforms
 * Linux
-* OSX (tested on 10.14 Mojave)
+* OSX - Not tested but should work
 
 ## Installation
-* Debian / Ubuntu / Mint - [Get latest deb](https://github.com/aesophor/py-todo/releases)
-```
-sudo dpkg -i py-todo_1.3.3-3_all.deb
-```
-
-* Arch Linux - [AUR](https://aur.archlinux.org/packages/py-todo) (Maintained by [RewoundVHS](https://github.com/RewoundVHS))
-```
-yay -S py-todo
-```
-
 * Manual Installation (Linux)
 ```
-$ git clone https://github.com/aesophor/py-todo.git
+$ git clone https://github.com/jcstill/py-todo.git
 $ cd py-todo && sudo cp todo /usr/bin/todo
 ```
 
 * Manual Installation (OSX)
 ```
-$ git clone https://github.com/aesophor/py-todo.git
+$ git clone https://github.com/jcstill/py-todo.git
 $ cd py-todo && cp todo /usr/local/bin/
 ```
 
 ## Usage
 ```
-$ todo                                   # List all items.
-$ todo -a                                # Add an item. (with Title / Expiry Date prompt)
-$ todo -a <title> <expiry_date>          # Add an item. (without Title / Expiry Date prompt)
-$ todo -e <index>                        # Edit an item. (with Title / Expiry Date prompt)
-$ todo -e <index> <title> <expiry_date>  # Edit an item. (without Title / Expiry Date prompt)
-$ todo -l --list                         # List all items.
-$ todo -m --move <index> <new index>     # Move an item from index to new index.
-$ todo -r <indices>                      # Remove one or more items.
-$ todo -s --sort                         # Sort items by their remaining days
-$ todo -h                                # Display help message.
-$ todo -v                                # Display version info.
-$ todo -org <filename>                   # Adds TODOs from Emacs org mode
+Usage: /usr/bin/todo <argument>
+-a --add                         -- Add a new item.
+-e --edit <index>                -- Edit an item.
+-org --orgfile <filename>        -- Add org file TODOs.
+
+-c --complete <index>            -- Mark task as completed (keep in list).
+-i --incomplete <index>          -- Mark task as incomplete. (default)
+
+-m --move <index> <new index>    -- Move an item from index to new index.
+-r --remove <indices...>         -- Remove items by their indices.
+-s --sort                        -- Sort items by their remaining days.
+
+-d --detail <index>              -- Show details section of the task
+-l --list                        -- List all items. (called if no args passed)
+
+-h --help                        -- Display help message.
+-v --version                     -- Display version info.
+
+Note:
+Dates and times should be entered in the ISO 8601 standard (month before day).
+
+
+Configuration Options (See /home/jacob/.config/py-todo/config):
+* color = true / false
+* detail_mode = true / false
+* week_start_day = Sat/Sun/Mon
+* time = true / false
+
 ```
 
 ## Configuration (Optional)
@@ -64,28 +64,10 @@ The default config location is `~/.config/py-todo/config`
 
 ```
 [PY-TODO]
-color = true / false
-detail_mode = true / false
+color = true
+detail_mode = true
 week_start_day = Sun
+time = true
 ```
-
-## Detail Mode
-```
-Discrete Mathematics Exam (Next Wednesday; 5 days left)  # detail_mode = true
-Discrete Mathematics Exam (5 days left)                  # detail_mode = false
-```
-
-## Contributors
-Special thanks to all the contributors! (In lexicographical order)
-* [Arsukeey](https://github.com/Arsukeey) - Added Detail Mode (e.g., Next Wednesday)
-* [christophergeiger3](https://github.com/christophergeiger3) - Reformatted code
-* [diplozoon](https://github.com/diplozoon) - Reformatted code
-* [jonaylor89](https://github.com/jonaylor89) - More robust config parsing
-* [luvhalvorson](https://github.com/luvhalvorson) - Updated README.md
-* [MMarinov97](https://github.com/MMarinov97) - Added compatibility with emacs org file
-* [patatman](https://github.com/patatman) - Improved -a --add. Tested py-todo on MacOS
-* [RewoundVHS](https://github.com/RewoundVHS) - AUR Package Maintainer, Color Mode
-* [Steampunkery](https://github.com/Steampunkery) - Added -e --edit, -m --move, refactoring
-
 ## License
 Available under the [MIT License](https://github.com/aesophor/py-todo/blob/master/LICENSE)

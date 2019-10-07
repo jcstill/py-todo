@@ -377,6 +377,8 @@ def usage():
           "Configuration Options (See " + config_location + config_name + "):\n" \
           "* color = true / false\n" \
           "* detail_mode = true / false\n" \
+          "* week_start_day = Sat/Sun/Mon\n" \
+          "* time = true / false\n" \
 
 
 def print_version():
