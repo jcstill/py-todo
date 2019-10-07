@@ -1,5 +1,5 @@
 <div align="center">
-<h3>PY-TODO</h3>
+<h3>PY-TODO-EXT</h3>
 <img src="https://raw.githubusercontent.com/jcstill/py-todo-ext/master/.meta/screenshot.png">
 
 </div>
