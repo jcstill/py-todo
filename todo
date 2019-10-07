@@ -12,6 +12,7 @@ from datetime import datetime
 from datetime import timedelta
 from configparser import ConfigParser
 from argparse import ArgumentParser
+from dateutil import parser
 
 """ Define config and data file locations """
 config_location = str(Path.home()) + '/.config/py-todo/'
@@ -262,7 +263,8 @@ def parse_date_str(exp_date_str):
             day_count = int( exp_date_str.split('d')[0] )
             return datetime.today() + timedelta(days=day_count)
         else:
-            return datetime(*map(int, exp_date_str.split('/')))
+            duedate = parser.parse(exp_date_str)
+            return duedate
     except:
         print("An error occurred while parsing your date.")
         sys.exit()
@@ -276,7 +278,8 @@ def parse_time_str(exp_time_str):
         if exp_time_str == '':
             return None
         else:
-            return datetime.strptime(exp_time_str, '%I:%M%p')
+            duetime = parser.parse(exp_time_str)
+            return duetime
     except:
         print("An error occurred while parsing your time.")
         sys.exit()
@@ -293,8 +296,8 @@ def take_input(title_pos, date_pos, time_pos, detail_pos, default_title=None):
     else:
         title = sys.argv[title_pos] if len(sys.argv) > title_pos else input("Title: ")
 
-    exp_date_str = sys.argv[date_pos] if len(sys.argv) > date_pos else input("Expiry date (YYYY/MM/DD or <days>d) (Optional): ")
-    exp_time_str = sys.argv[time_pos] if len(sys.argv) > time_pos else input("Expiry time (HH:MM<am/pm>) (Optional): ")
+    exp_date_str = sys.argv[date_pos] if len(sys.argv) > date_pos else input("Expiry date (Any Format or <days>d) (Optional): ")
+    exp_time_str = sys.argv[time_pos] if len(sys.argv) > time_pos else input("Expiry time (24 or 12 hour) (Optional): ")
     detail_str = sys.argv[detail_pos] if len(sys.argv) > detail_pos else input("Task details (Optional): ")
 
     return title if title else default_title, exp_date_str, exp_time_str, detail_str
@@ -352,6 +355,9 @@ def usage():
           "\n" \
           "-h --help                        -- Display help message.\n" \
           "-v --version                     -- Display version info.\n" \
+          "\n" \
+          "Note:\n" \
+          "Dates and times should be entered in the ISO 8601 standard (month before day).\n" \
           "\n\n" \
           "Configuration Options (See " + config_location + config_name + "):\n" \
           "* color = true / false\n" \
