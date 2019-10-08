@@ -354,26 +354,26 @@ def scrape_date(line):
 
 def usage():
     return "\nUsage: " + sys.argv[0] + " <argument>\n" \
-          "-a --add                         -- Add a new item.\n" \
-          "-e --edit <index>                -- Edit an item.\n" \
-          "-org --orgfile <filename>        -- Add org file TODOs.\n" \
+          "-a, --add                         -- Add a new item.\n" \
+          "-e, --edit <index>                -- Edit an item.\n" \
+          "-org, --orgfile <filename>        -- Add org file TODOs.\n" \
           "\n" \
-          "-c --complete <index>            -- Mark task as completed (keep in list).\n" \
-          "-i --incomplete <index>          -- Mark task as incomplete. (default)\n" \
+          "-c, --complete <index>            -- Mark task as completed (keep in list).\n" \
+          "-i, --incomplete <index>          -- Mark task as incomplete. (default)\n" \
           "\n" \
-          "-m --move <index> <new index>    -- Move an item from index to new index.\n" \
-          "-r --remove <indices...>         -- Remove items by their indices.\n" \
-          "-s --sort                        -- Sort items by their remaining days.\n" \
+          "-m, --move <index> <new index>    -- Move an item from index to new index.\n" \
+          "-r, --remove (<range>|<indices>)  -- Remove items by their indices.\n" \
+          "-s, --sort                        -- Sort items by their remaining days.\n" \
           "\n" \
-          "-d --detail <index>              -- Show details section of the task\n" \
-          "-l --list                        -- List all items. (called if no args passed)\n" \
+          "-d, --detail [index]              -- Show details of all or specific task\n" \
+          "-l, --list                        -- List all items. (called if no args passed)\n" \
           "\n" \
-          "-h --help                        -- Display help message.\n" \
-          "-v --version                     -- Display version info.\n" \
+          "-h, --help                        -- Display help message.\n" \
+          "-v, --version                     -- Display version info.\n" \
           "\n" \
           "Note:\n" \
           "Dates and times should be entered in the ISO 8601 standard (month before day).\n" \
-          "\n\n" \
+          "\n" \
           "Configuration Options (See " + config_location + config_name + "):\n" \
           "* color = true / false\n" \
           "* detail_mode = true / false\n" \
@@ -429,7 +429,10 @@ if __name__ == '__main__':
         list_items()
 
     elif sys.argv[1] in ['-d', '--detail']:
-        if len(sys.argv) == 3:
+        if len(sys.argv) == 2:
+            for x in range(0, int(len(items))):
+                print_detail(x)
+        elif len(sys.argv) == 3:
             try:
                 print_detail(int(sys.argv[2]))
             except:
@@ -473,9 +476,23 @@ if __name__ == '__main__':
             sys.exit(1)
 
     elif sys.argv[1] in ['-r', '--remove']:
-        if len(sys.argv) >= 3:
+        if len(sys.argv) > 3:
             try:
                 indices = list(map(int, sys.argv[2:]))
+                remove_item(indices)
+                list_items()
+            except:
+                print("Item does not exist.")
+        elif len(sys.argv) == 3:
+            try:
+                indices=[]
+                first_index = int(str(sys.argv[2]).split('-')[0])
+                try:
+                    last_index = int(str(sys.argv[2]).split('-')[1])
+                except:
+                    last_index = first_index
+                for x in range(first_index, last_index+1):
+                    indices.append(x)
                 remove_item(indices)
                 list_items()
             except:
