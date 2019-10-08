@@ -29,27 +29,26 @@ $ cd py-todo && cp todo /usr/local/bin/
 
 ## Usage
 ```
-Usage: /usr/bin/todo <argument>
--a --add                         -- Add a new item.
--e --edit <index>                -- Edit an item.
--org --orgfile <filename>        -- Add org file TODOs.
+Usage: todo <argument>
+-a, --add                         -- Add a new item.
+-e, --edit <index>                -- Edit an item.
+-org, --orgfile <filename>        -- Add org file TODOs.
 
--c --complete <index>            -- Mark task as completed (keep in list).
--i --incomplete <index>          -- Mark task as incomplete. (default)
+-c, --complete <index>            -- Mark task as completed (keep in list).
+-i, --incomplete <index>          -- Mark task as incomplete. (default)
 
--m --move <index> <new index>    -- Move an item from index to new index.
--r --remove <indices...>         -- Remove items by their indices.
--s --sort                        -- Sort items by their remaining days.
+-m, --move <index> <new index>    -- Move an item from index to new index.
+-r, --remove (<range>|<indices>)  -- Remove items by their indices.
+-s, --sort                        -- Sort items by their remaining days.
 
--d --detail <index>              -- Show details section of the task
--l --list                        -- List all items. (called if no args passed)
+-d, --detail [index]              -- Show details of all or specific task
+-l, --list                        -- List all items. (called if no args passed)
 
--h --help                        -- Display help message.
--v --version                     -- Display version info.
+-h, --help                        -- Display help message.
+-v, --version                     -- Display version info.
 
 Note:
 Dates and times should be entered in the ISO 8601 standard (month before day).
-
 
 Configuration Options (See /home/jacob/.config/py-todo/config):
 * color = true / false
