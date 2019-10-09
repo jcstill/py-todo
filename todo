@@ -276,10 +276,9 @@ def parse_date_str(exp_date_str):
             return None
         elif exp_date_str.endswith('d'):
             day_count = int( exp_date_str.split('d')[0] )
-            return datetime.today() + timedelta(days=day_count)
+            return datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=day_count)
         else:
-            duedate = parser.parse(exp_date_str)
-            return duedate
+            return parser.parse(exp_date_str).replace(hour=0, minute=0, second=0, microsecond=0)
     except:
         print("An error occurred while parsing your date.")
         sys.exit()
@@ -293,8 +292,7 @@ def parse_time_str(exp_time_str):
         if exp_time_str == '':
             return None
         else:
-            duetime = parser.parse(exp_time_str)
-            return duetime
+            return parser.parse(exp_time_str).replace(year=1, month=1, day=1)
     except:
         print("An error occurred while parsing your time.")
         sys.exit()
