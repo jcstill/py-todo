@@ -212,7 +212,7 @@ def print_detail(index):
         elif days_left > 1:
             date += str(days_left) + " days left)"
         elif days_left < -1:
-            date += str(days_left) + " days ago)"
+            date += str(abs(days_left)) + " days ago)"
         date = maybe_color_str(date, due_color, lambda: True if "DUE" in date else False)
         date = maybe_color_str(date, date_color, lambda: True if "DUE" not in date else False)
         date = maybe_color_str(date, today_color, lambda: True if "Today" in date else False)
